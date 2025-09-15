@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Picker Pro - Advanced Color Detection Tool</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="app-title">
+                    <span class="title-icon">🎨</span>
+                    Color Picker Pro
+                    <span class="version">v2.0</span>
+                </h1>
+                <div class="header-actions">
+                    <button class="help-btn" id="helpBtn" title="Help & Shortcuts">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Upload Section -->
+            <section class="upload-section" id="uploadSection">
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-content">
+                        <svg class="upload-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7,10 12,15 17,10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        <h3>Drop your image here</h3>
+                        <p>or click to browse files</p>
+                        <div class="file-info">
+                            <small>Supports JPG, PNG, GIF, WebP, BMP • Max 10MB</small>
+                        </div>
+                    </div>
+                    <input type="file" id="fileInput" accept="image/*" hidden>
+                </div>
+                <div class="upload-progress" id="uploadProgress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <span class="progress-text" id="progressText">0%</span>
+                </div>
+            </section>
+
+            <!-- Canvas Section -->
+            <section class="canvas-section" id="canvasSection" style="display: none;">
+                <div class="canvas-toolbar">
+                    <div class="canvas-info">
+                        <span id="imageInfo">No image loaded</span>
+                        <span id="mouseCoords" class="coords">x: 0, y: 0</span>
+                    </div>
+                    <div class="canvas-controls">
+                        <button class="control-btn" id="zoomInBtn" title="Zoom In (+)">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="m21 21-4.35-4.35"></path>
+                                <line x1="11" y1="8" x2="11" y2="14"></line>
+                                <line x1="8" y1="11" x2="14" y2="11"></line>
+                            </svg>
+                        </button>
+                        <button class="control-btn" id="zoomOutBtn" title="Zoom Out (-)">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="m21 21-4.35-4.35"></path>
+                                <line x1="8" y1="11" x2="14" y2="11"></line>
+                            </svg>
+                        </button>
+                        <button class="control-btn" id="resetViewBtn" title="Reset View (R)">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
+                                <path d="M21 3v5h-5"></path>
+                                <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
+                                <path d="M8 16H3v5"></path>
+                            </svg>
+                        </button>
+                        <button class="control-btn" id="newImageBtn" title="Load New Image">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <circle cx="9" cy="9" r="2"></circle>
+                                <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="canvas-container">
+                    <canvas id="imageCanvas"></canvas>
+                    <div class="crosshair" id="crosshair"></div>
+                </div>
+            </section>
+
+            <!-- Results and History -->
+            <div class="bottom-section">
+                <!-- Color Results -->
+                <section class="results-section" id="resultsSection">
+                    <div class="results-header">
+                        <h2>Color Information</h2>
+                        <div class="color-preview" id="colorPreview">
+                            <div class="preview-swatch"></div>
+                            <span class="preview-text">Click on image to detect color</span>
+                        </div>
+                    </div>
+                    
+                    <div class="color-formats" id="colorFormats">
+                        <!-- RGB Section -->
+                        <div class="format-card">
+                            <div class="format-header">
+                                <h3>RGB</h3>
+                                <button class="copy-btn" data-copy-type="rgb" title="Copy RGB">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="rgb-values">
+                                <div class="rgb-component">
+                                    <label>R</label>
+                                    <input type="range" min="0" max="255" class="rgb-slider" id="redSlider">
+                                    <span id="redValue">0</span>
+                                </div>
+                                <div class="rgb-component">
+                                    <label>G</label>
+                                    <input type="range" min="0" max="255" class="rgb-slider" id="greenSlider">
+                                    <span id="greenValue">0</span>
+                                </div>
+                                <div class="rgb-component">
+                                    <label>B</label>
+                                    <input type="range" min="0" max="255" class="rgb-slider" id="blueSlider">
+                                    <span id="blueValue">0</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- HEX Section -->
+                        <div class="format-card">
+                            <div class="format-header">
+                                <h3>HEX</h3>
+                                <button class="copy-btn" data-copy-type="hex" title="Copy HEX">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="hex-value" id="hexValue">#000000</div>
+                        </div>
+
+                        <!-- HSL Section -->
+                        <div class="format-card">
+                            <div class="format-header">
+                                <h3>HSL</h3>
+                                <button class="copy-btn" data-copy-type="hsl" title="Copy HSL">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="hsl-value" id="hslValue">hsl(0, 0%, 0%)</div>
+                        </div>
+
+                        <!-- Named Color Section -->
+                        <div class="format-card">
+                            <div class="format-header">
+                                <h3>Named Color</h3>
+                                <div class="confidence-badge" id="confidenceBadge">0% match</div>
+                            </div>
+                            <div class="named-color" id="namedColor">No match</div>
+                        </div>
+                    </div>
+
+                    <!-- Color Analysis -->
+                    <div class="color-analysis" id="colorAnalysis">
+                        <div class="analysis-item">
+                            <span class="analysis-label">Brightness:</span>
+                            <span id="brightnessValue">0%</span>
+                        </div>
+                        <div class="analysis-item">
+                            <span class="analysis-label">Luminance:</span>
+                            <span id="luminanceValue">0.000</span>
+                        </div>
+                        <div class="analysis-item">
+                            <span class="analysis-label">Temperature:</span>
+                            <span id="temperatureValue">Neutral</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Color History -->
+                <section class="history-section" id="historySection">
+                    <div class="history-header">
+                        <h2>Color History</h2>
+                        <div class="history-actions">
+                            <button class="action-btn" id="clearHistoryBtn" title="Clear History">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="3,6 5,6 21,6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                </svg>
+                            </button>
+                            <button class="action-btn" id="savePaletteBtn" title="Save as Palette">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                                    <polyline points="17,21 17,13 7,13 7,21"></polyline>
+                                    <polyline points="7,3 7,8 15,8"></polyline>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="history-grid" id="historyGrid">
+                        <div class="history-placeholder">
+                            <p>No colors picked yet</p>
+                            <small>Click on the image to start building your color history</small>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- Help Modal -->
+        <div class="modal-overlay" id="helpModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Help & Keyboard Shortcuts</h3>
+                    <button class="close-btn" id="closeHelpBtn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="help-section">
+                        <h4>How to Use</h4>
+                        <ul>
+                            <li>Upload an image by dragging and dropping or clicking the upload area</li>
+                            <li>Click anywhere on the image to detect the color at that pixel</li>
+                            <li>Use zoom controls to get precise color selection</li>
+                            <li>Copy color values by clicking the copy buttons</li>
+                        </ul>
+                    </div>
+                    <div class="help-section">
+                        <h4>Keyboard Shortcuts</h4>
+                        <div class="shortcuts">
+                            <div class="shortcut-item">
+                                <kbd>+</kbd>
+                                <span>Zoom In</span>
+                            </div>
+                            <div class="shortcut-item">
+                                <kbd>-</kbd>
+                                <span>Zoom Out</span>
+                            </div>
+                            <div class="shortcut-item">
+                                <kbd>R</kbd>
+                                <span>Reset View</span>
+                            </div>
+                            <div class="shortcut-item">
+                                <kbd>C</kbd>
+                                <span>Copy HEX Color</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast Notifications -->
+        <div class="toast-container" id="toastContainer"></div>
+    </div>
+
+    <script src="js/colorUtils.js"></script>
+    <script src="js/imageHandler.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
